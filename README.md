@@ -15,7 +15,7 @@ no models — pages are read from disk and rendered on request.
 ## Features
 
 - Renders Markdown files (`fenced_code`, `tables`, `toc`, `sane_lists`).
-- Auto-generated sidebar navigation, grouped by folder.
+- Auto-generated sidebar navigation grouped by folder — or hand-written via a `menu.md` file.
 - Automatic per-page table of contents built from each page's headings.
 - Case-insensitive, traversal-safe URL resolution.
 - Serves images referenced from your Markdown.
@@ -130,6 +130,24 @@ block):
 
 To change the docs page itself rather than the surrounding layout, override
 `docs_viewer/detail.html` in your own template directory.
+
+## Custom navigation
+
+By default the sidebar is generated from your folder tree. To control it by
+hand instead, add a `menu.md` file at the root of your docs directory. When
+present, its rendered Markdown replaces the auto-generated sidebar (and
+`menu.md` itself is never served as a page).
+
+Write it as a normal Markdown list of links:
+
+```markdown
+- [Introduction](/docs/)
+- [Getting started](/docs/manual/01-getting-started)
+- [Configuration](/docs/manual/02-configuration)
+```
+
+The links are rendered as-is, so point them at the paths where you mounted the
+viewer — the `/docs/` prefix above matches `path("docs/", include(...))`.
 
 ## Translations
 

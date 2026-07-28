@@ -214,3 +214,22 @@ class DocsFlatDocsTests(SimpleTestCase):
             response = self.client.get(reverse("docs:detail", kwargs={"doc_path": "01-getting-started"}))
             self.assertEqual(response.status_code, 200)
             self.assertContains(response, "This page explains how to get started")
+
+
+def menu_root():
+    from django.conf import settings
+
+    return settings.BASE_DIR / "menu_docs"
+
+
+@override_settings(DOCS_VIEWER_LOGIN_REQUIRED=False)
+class DocsMenuFileTests(SimpleTestCase):
+    """A `menu.md` at the docs root replaces the auto-generated navigation."""
+
+    def test_menu_file_replaces_auto_navigation(self):
+        with override_settings(DOCS_VIEWER_ROOT=menu_root()):
+            response = self.client.get(reverse("docs:home"))
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, "Handbook menu")
+            # The rendered menu replaces the auto-generated <ul class="docs-nav"> list.
+            self.assertNotContains(response, 'class="docs-nav"')

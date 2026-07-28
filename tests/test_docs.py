@@ -141,6 +141,15 @@ class DocsViewTests(SimpleTestCase):
             draft = self.client.get(reverse("docs:detail", kwargs={"doc_path": "_drafts/wip"}))
             self.assertEqual(draft.status_code, 200)
 
+    def test_missing_image_returns_404(self):
+        response = self.client.get(reverse("docs:detail", kwargs={"doc_path": "manual/images/nope.png"}))
+        self.assertEqual(response.status_code, 404)
+
+    def test_missing_docs_root_returns_404(self):
+        with override_settings(DOCS_VIEWER_ROOT="/nonexistent/docs/root"):
+            response = self.client.get(reverse("docs:home"))
+            self.assertEqual(response.status_code, 404)
+
 
 _PROJECT_TEMPLATES = [
     {

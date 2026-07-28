@@ -1,0 +1,34 @@
+{% extends base_template %}
+{% load i18n %}
+
+{% block title %}{{ site_title }}{% endblock %}
+
+{% block content %}
+  <style>
+    .docs-header { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; max-width: 60rem; margin: 0 auto; padding: 1rem 1rem 0; }
+    .docs-title { margin: 0; }
+    .docs-back { text-decoration: none; white-space: nowrap; }
+    .docs-layout { display: flex; gap: 2rem; align-items: flex-start; max-width: 60rem; margin: 0 auto; padding: 1rem; }
+    .docs-sidebar { flex: 0 0 14rem; }
+    .docs-content { flex: 1 1 auto; min-width: 0; }
+    .docs-toc { flex: 0 0 12rem; position: sticky; top: 1rem; font-size: .9rem; }
+    .docs-toc .toc > ul, .docs-toc .toc ul { list-style: none; padding-left: 0; }
+    .docs-toc .toc ul ul { padding-left: 1rem; }
+    .docs-toc a { text-decoration: none; }
+    .docs-nav, .docs-nav ul { list-style: none; padding-left: 0; }
+    .docs-nav ul { padding-left: 1rem; }
+    .docs-nav-group > span { font-weight: 600; display: block; margin-top: .75rem; }
+    .docs-nav-link { text-decoration: none; }
+    .docs-nav-link.active { font-weight: 600; }
+    .docs-content img { max-width: 100%; height: auto; }
+  </style>
+  <header class="docs-header">
+    <h1 class="docs-title">{{ site_title }}</h1>
+    <a class="docs-back" href="/">&larr; {% translate "Back" %}</a>
+  </header>
+  <div class="docs-layout">
+    <nav class="docs-sidebar">{{ sidebar_html|safe }}</nav>
+    <article class="docs-content">{{ content_html|safe }}</article>
+    {% if toc_html %}<aside class="docs-toc">{{ toc_html|safe }}</aside>{% endif %}
+  </div>
+{% endblock %}

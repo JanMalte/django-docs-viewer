@@ -1,0 +1,7 @@
+# The first line is the default `python`; the rest expose python3.x so tox can
+# find every interpreter in the support matrix.
+3.12
+3.10
+3.11
+3.13
+3.14

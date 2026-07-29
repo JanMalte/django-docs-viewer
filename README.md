@@ -90,6 +90,35 @@ docs/
         └── status-legend.png
 ```
 
+Folders nest to any depth, and each level becomes a sidebar group, so a
+subfolder per language keeps translated pages neatly separated instead of
+listing every language in one flat group:
+
+```
+docs/
+├── README.md                     # landing page + site title
+└── manual/
+    ├── deutsch/
+    │   ├── 01-erste-schritte.md
+    │   └── 02-konfiguration.md
+    ├── english/
+    │   ├── 01-getting-started.md
+    │   └── 02-configuration.md
+    └── francais/
+        ├── 01-prise-en-main.md
+        └── 02-configuration.md
+```
+
+Group labels come from the folder name, humanized (dashes and underscores
+become spaces, and it is title-cased), so name folders in lowercase — `deutsch`
+renders as **Deutsch** in the sidebar.
+
+Pages sort by filename within their folder (the index/`README` first). Prefix
+filenames with a zero-padded number (`01-`, `02-`) to control the order; the
+prefix is stripped from the sidebar label, so `01-getting-started.md` shows as
+**Getting started**. Zero-pad once you pass nine pages, otherwise `10-…` sorts
+ahead of `2-…`.
+
 ## Settings
 
 | Setting                      | Default                   | Description                                              |

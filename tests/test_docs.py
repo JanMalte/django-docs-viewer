@@ -48,6 +48,22 @@ class DocsViewTests(SimpleTestCase):
         self.assertContains(response, "docs-nav")
         self.assertContains(response, reverse("docs:detail", kwargs={"doc_path": "manual/01-getting-started"}))
 
+    def test_sidebar_nests_subfolders(self):
+        response = self.client.get(reverse("docs:home"))
+        self.assertContains(response, reverse("docs:detail", kwargs={"doc_path": "guide/deutsch/setup"}))
+        # A subfolder renders as a group nested inside its parent folder's group, to any depth,
+        # labelled by its humanized folder name (a lowercase "deutsch" is title-cased to "Deutsch").
+        self.assertContains(
+            response,
+            '<span>Guide</span><ul><li class="docs-nav-group"><span>Deutsch</span>',
+            html=False,
+        )
+
+    def test_deeply_nested_page_renders(self):
+        response = self.client.get(reverse("docs:detail", kwargs={"doc_path": "guide/english/setup"}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "English setup guide")
+
     def test_index_appears_as_home_nav_item(self):
         response = self.client.get(reverse("docs:home"))
         self.assertContains(response, f'docs-nav-link active" href="{reverse("docs:home")}"')

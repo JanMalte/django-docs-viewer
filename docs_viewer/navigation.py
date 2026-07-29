@@ -21,37 +21,38 @@ def build_sidebar_html(current_path):
     if menu_file.is_file():
         return render_markdown(menu_file)
 
-    root_pages, groups = _group_pages(discover_pages())
+    tree = _build_tree(discover_pages())
     parts = ['<ul class="docs-nav">']
 
     if home_link := _home_link(current_path):
         parts.append(home_link)
 
-    for page in sorted(root_pages, key=_page_sort_key):
-        parts.append(_page_link(page, current_path))
-
-    for group in sorted(groups, key=str.lower):
-        parts.append(f'<li class="docs-nav-group"><span>{escape(_humanize(group))}</span><ul>')
-        for page in sorted(groups[group], key=_page_sort_key):
-            parts.append(_page_link(page, current_path))
-        parts.append("</ul></li>")
+    _render_tree(tree, current_path, parts)
 
     parts.append("</ul>")
     return "".join(parts)
 
 
-def _group_pages(pages):
-    """Partition discovered pages into top-level pages and folder groups keyed by folder name."""
+def _build_tree(pages):
+    """Arrange discovered pages into a nested tree mirroring their folder structure to any depth."""
     root = docs_root()
-    root_pages = []
-    groups = {}
+    tree = {"pages": [], "dirs": {}}
     for page in pages:
-        relative = page.relative_to(root)
-        if len(relative.parts) == 1:
-            root_pages.append(page)  # flat docs: pages live directly under the docs directory
-        else:
-            groups.setdefault(relative.parts[0], []).append(page)
-    return root_pages, groups
+        node = tree
+        for folder in page.relative_to(root).parts[:-1]:
+            node = node["dirs"].setdefault(folder, {"pages": [], "dirs": {}})
+        node["pages"].append(page)
+    return tree
+
+
+def _render_tree(node, current_path, parts):
+    """Emit a folder's pages, then a nested group for each subfolder, recursing into each."""
+    for page in sorted(node["pages"], key=_page_sort_key):
+        parts.append(_page_link(page, current_path))
+    for folder in sorted(node["dirs"], key=str.lower):
+        parts.append(f'<li class="docs-nav-group"><span>{escape(_humanize(folder))}</span><ul>')
+        _render_tree(node["dirs"][folder], current_path, parts)
+        parts.append("</ul></li>")
 
 
 def _home_link(current_path):

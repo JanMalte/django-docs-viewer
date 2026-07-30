@@ -6,7 +6,7 @@ from django.views.static import serve
 
 from .conf import base_template, login_required
 from .navigation import build_sidebar_html
-from .pages import is_hidden, landing_relative_path, render_page, site_title
+from .pages import directory_index, is_hidden, landing_relative_path, render_page, site_title
 from .paths import (
     docs_root,
     is_image_request,
@@ -33,11 +33,13 @@ class DocsView(View):
             relative_path = landing_relative_path()
             if relative_path is None:
                 raise Http404("No documentation available")
+            markdown_path = resolve_within_docs(relative_path)
         else:
-            # An optional .md suffix lets relative links between Markdown pages resolve to a sibling page.
-            relative_path = with_markdown_suffix(doc_path)
+            markdown_path = resolve_within_docs(with_markdown_suffix(doc_path))
+            if markdown_path is None or not markdown_path.is_file():
+                directory = resolve_within_docs(without_markdown_suffix(doc_path))
+                markdown_path = directory_index(directory)
 
-        markdown_path = resolve_within_docs(relative_path)
         if markdown_path is None or not markdown_path.is_file():
             raise Http404("Documentation page not found")
 

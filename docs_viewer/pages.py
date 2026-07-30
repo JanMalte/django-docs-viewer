@@ -73,16 +73,21 @@ def discover_pages():
     return pages
 
 
-def dedicated_index():
-    """The docs-root index/README landing file, matched case-insensitively; None when absent."""
-    root = docs_root()
-    if not root.is_dir():
+def directory_index(directory):
+    """The index/README file directly inside directory, matched case-insensitively; None when absent."""
+    if directory is None or not directory.is_dir():
         return None
-    by_name = {child.name.lower(): child.name for child in root.iterdir() if child.is_file()}
+    by_name = {child.name.lower(): child.name for child in directory.iterdir() if child.is_file()}
     for candidate in INDEX_FILENAMES:
         if candidate in by_name:
-            return by_name[candidate]
+            return directory / by_name[candidate]
     return None
+
+
+def dedicated_index():
+    """The docs-root index/README landing file name, matched case-insensitively; None when absent."""
+    match = directory_index(docs_root())
+    return match.name if match else None
 
 
 def _landing_sort_key(page):

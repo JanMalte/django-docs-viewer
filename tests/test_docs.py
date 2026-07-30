@@ -259,6 +259,28 @@ class DocsSubfolderIndexLandingTests(SimpleTestCase):
             self.assertNotContains(response, "Architecture notes for developers.")
 
 
+@override_settings(DOCS_VIEWER_LOGIN_REQUIRED=False)
+class DocsDirectoryIndexTests(SimpleTestCase):
+    """A directory URL renders that folder's index/README instead of 404-ing."""
+
+    def test_directory_url_renders_folder_readme(self):
+        with override_settings(DOCS_VIEWER_ROOT=nested_index_root()):
+            response = self.client.get(reverse("docs:detail", kwargs={"doc_path": "developer/"}))
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, "Start here for developer documentation.")
+
+    def test_directory_url_without_trailing_slash_renders_folder_readme(self):
+        with override_settings(DOCS_VIEWER_ROOT=nested_index_root()):
+            response = self.client.get(reverse("docs:detail", kwargs={"doc_path": "developer"}))
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, "Start here for developer documentation.")
+
+    def test_directory_without_index_returns_404(self):
+        # tests/docs/manual holds pages but no index/README.
+        response = self.client.get(reverse("docs:detail", kwargs={"doc_path": "manual/"}))
+        self.assertEqual(response.status_code, 404)
+
+
 def menu_root():
     from django.conf import settings
 

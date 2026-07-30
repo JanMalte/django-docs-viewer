@@ -85,11 +85,16 @@ def dedicated_index():
     return None
 
 
+def _landing_sort_key(page):
+    relative = page.relative_to(docs_root()).as_posix()
+    return (0 if is_index_filename(page.name) else 1, relative.lower())
+
+
 def landing_relative_path():
     index = dedicated_index()
     if index is not None:
         return index
-    pages = discover_pages()
+    pages = sorted(discover_pages(), key=_landing_sort_key)
     return pages[0].relative_to(docs_root()).as_posix() if pages else None
 
 

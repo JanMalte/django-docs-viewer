@@ -1,10 +1,12 @@
 from pathlib import Path
+from unittest import mock
 
 from django.http import Http404
 from django.test import SimpleTestCase, override_settings
 from django.urls import reverse
 from django.utils import translation
 
+from docs_viewer.pages import landing_relative_path
 from docs_viewer.paths import (
     is_image_request,
     resolve_within_docs,
@@ -230,6 +232,31 @@ class DocsFlatDocsTests(SimpleTestCase):
             response = self.client.get(reverse("docs:detail", kwargs={"doc_path": "01-getting-started"}))
             self.assertEqual(response.status_code, 200)
             self.assertContains(response, "This page explains how to get started")
+
+
+def nested_index_root():
+    from django.conf import settings
+
+    return settings.BASE_DIR / "nested_index_docs"
+
+
+@override_settings(DOCS_VIEWER_LOGIN_REQUIRED=False)
+class DocsSubfolderIndexLandingTests(SimpleTestCase):
+    """With no docs-root index, the landing prefers a subfolder README over other pages,
+    regardless of the order the filesystem enumerates them in."""
+
+    def test_landing_prefers_subfolder_readme(self):
+        root = nested_index_root()
+        # Force the discovery order that would otherwise pick the "a..." page first.
+        discovered = [root / "developer" / "architecture.md", root / "developer" / "README.md"]
+        with (
+            override_settings(DOCS_VIEWER_ROOT=root),
+            mock.patch("docs_viewer.pages.discover_pages", return_value=discovered),
+        ):
+            self.assertEqual(landing_relative_path(), "developer/README.md")
+            response = self.client.get(reverse("docs:home"))
+            self.assertContains(response, "Start here for developer documentation.")
+            self.assertNotContains(response, "Architecture notes for developers.")
 
 
 def menu_root():

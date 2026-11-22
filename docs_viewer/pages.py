@@ -3,6 +3,7 @@ import re
 from pathlib import Path
 
 import markdown
+from markdown.extensions.toc import slugify_unicode
 
 from .conf import default_title, skip_dirs, toc_depth
 from .paths import docs_root
@@ -26,7 +27,7 @@ def is_hidden(relative_path):
 def _converter():
     return markdown.Markdown(
         extensions=MARKDOWN_EXTENSIONS,
-        extension_configs={"toc": {"toc_depth": toc_depth()}},
+        extension_configs={"toc": {"toc_depth": toc_depth(), "slugify": slugify_unicode}},
     )
 
 

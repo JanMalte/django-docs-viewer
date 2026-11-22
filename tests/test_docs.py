@@ -145,6 +145,11 @@ class DocsViewTests(SimpleTestCase):
         response = self.client.get(reverse("docs:detail", kwargs={"doc_path": "manual/02-configuration"}))
         self.assertContains(response, '<p class="docs-note">You can override the base template.</p>', html=True)
 
+    def test_heading_anchor_keeps_unicode_characters(self):
+        response = self.client.get(reverse("docs:detail", kwargs={"doc_path": "guide/deutsch/setup"}))
+        self.assertContains(response, 'id="über-die-straße"')
+        self.assertContains(response, 'href="#über-die-straße"')
+
     def test_toc_excludes_page_h1_by_default(self):
         response = self.client.get(reverse("docs:detail", kwargs={"doc_path": "manual/02-configuration"}))
         self.assertNotContains(response, 'href="#configuration"')

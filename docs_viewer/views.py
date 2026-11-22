@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.views import View
 from django.views.static import serve
 
-from .conf import base_template, login_required
+from .conf import back_url, base_template, login_required
 from .navigation import build_sidebar_html
 from .pages import directory_index, is_hidden, landing_relative_path, render_page, site_title
 from .paths import (
@@ -55,6 +55,7 @@ class DocsView(View):
             {
                 "base_template": base_template(),
                 "site_title": site_title(),
+                "back_url": back_url(),
                 "content_html": content_html,
                 "toc_html": toc_html,
                 "sidebar_html": build_sidebar_html(canonical_path),

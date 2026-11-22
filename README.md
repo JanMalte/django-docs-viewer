@@ -127,6 +127,7 @@ ahead of `2-…`.
 | `DOCS_VIEWER_BASE_TEMPLATE`  | `"docs_viewer/base.html"` | Template the docs page extends. Point at your own layout. |
 | `DOCS_VIEWER_LOGIN_REQUIRED` | `True`                    | Redirect anonymous users to `LOGIN_URL`. Set `False` to make docs public. |
 | `DOCS_VIEWER_TITLE`          | `"Documentation"`         | Fallback page title when no index heading is available.  |
+| `DOCS_VIEWER_BACK_URL`       | `"/"`                     | Target of the header's "Back" link: a path, full URL or URL name (resolved like `LOGIN_URL`). Set `None` to hide the link. |
 | `DOCS_VIEWER_TOC_DEPTH`      | `"2-3"`                   | Heading levels included in the per-page table of contents. |
 | `DOCS_VIEWER_SKIP_DIRS`      | `["_*"]`                  | Glob patterns; directories matching any are hidden (excluded from navigation and not served). A custom value replaces the default, so include `"_*"` if you still want underscore-prefixed directories hidden. |
 | `DOCS_VIEWER_MARKDOWN_EXTENSIONS` | `["fenced_code", "tables", "toc", "sane_lists", "attr_list"]` | [Python-Markdown extensions](https://python-markdown.github.io/extensions/) used to render pages: names or `Extension` instances (e.g. `CodeHiliteExtension(linenums=True)`). A custom value replaces the default; keep `"toc"` for the per-page table of contents. |
@@ -184,7 +185,13 @@ block):
 ```
 
 To change the docs page itself rather than the surrounding layout, override
-`docs_viewer/detail.html` in your own template directory.
+`docs_viewer/detail.html` in your own template directory. To replace only the
+header's back link, extend it and override the `docs_back_link` block:
+
+```html
+{% extends "docs_viewer/detail.html" %}
+{% block docs_back_link %}<a class="docs-back" href="/app/">Back to the app</a>{% endblock %}
+```
 
 ## Custom navigation
 

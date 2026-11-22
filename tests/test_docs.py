@@ -122,6 +122,21 @@ class DocsViewTests(SimpleTestCase):
         self.assertContains(response, '<h1 class="docs-title">Django Docs Viewer</h1>')
         self.assertContains(response, '<a class="docs-back" href="/">')
 
+    def test_back_url_setting_accepts_path(self):
+        with override_settings(DOCS_VIEWER_BACK_URL="/dashboard/"):
+            response = self.client.get(reverse("docs:home"))
+        self.assertContains(response, '<a class="docs-back" href="/dashboard/">')
+
+    def test_back_url_setting_accepts_url_name(self):
+        with override_settings(DOCS_VIEWER_BACK_URL="docs:home"):
+            response = self.client.get(reverse("docs:detail", args=["manual/01-getting-started"]))
+        self.assertContains(response, f'<a class="docs-back" href="{reverse("docs:home")}">')
+
+    def test_back_url_none_hides_back_link(self):
+        with override_settings(DOCS_VIEWER_BACK_URL=None):
+            response = self.client.get(reverse("docs:home"))
+        self.assertNotContains(response, 'class="docs-back"')
+
     def test_back_link_is_translated(self):
         with translation.override("de"):
             response = self.client.get(reverse("docs:home"))

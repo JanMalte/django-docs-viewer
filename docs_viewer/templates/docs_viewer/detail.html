@@ -24,7 +24,9 @@
   </style>
   <header class="docs-header">
     <h1 class="docs-title">{{ site_title }}</h1>
-    <a class="docs-back" href="/">&larr; {% translate "Back" %}</a>
+    {% block docs_back_link %}
+      {% if back_url %}<a class="docs-back" href="{{ back_url }}">&larr; {% translate "Back" %}</a>{% endif %}
+    {% endblock %}
   </header>
   <div class="docs-layout">
     <nav class="docs-sidebar">{{ sidebar_html|safe }}</nav>

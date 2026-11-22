@@ -1,7 +1,9 @@
 from django.conf import settings
+from django.shortcuts import resolve_url
 from django.utils.translation import gettext_lazy as _
 
 DEFAULT_TITLE = _("Documentation")
+DEFAULT_BACK_URL = "/"
 DEFAULT_BASE_TEMPLATE = "docs_viewer/base.html"
 DEFAULT_TOC_DEPTH = "2-3"
 DEFAULT_SKIP_DIRS = ["_*"]
@@ -27,6 +29,12 @@ def toc_depth():
 def skip_dirs():
     """Glob patterns; a page is hidden when any directory in its path matches one."""
     return getattr(settings, "DOCS_VIEWER_SKIP_DIRS", DEFAULT_SKIP_DIRS)
+
+
+def back_url():
+    """A URL, path or URL name; ``None`` hides the back link."""
+    url = getattr(settings, "DOCS_VIEWER_BACK_URL", DEFAULT_BACK_URL)
+    return resolve_url(url) if url else None
 
 
 def markdown_extensions():

@@ -1,6 +1,6 @@
 [project]
 name = "django-docs-viewer"
-version = "0.2.1"
+version = "0.2.2"
 description = "A simple in-app Markdown documentation viewer for Django."
 authors = [{ name = "Malte Gerth", email = "mail@malte-gerth.de" }]
 license = "MIT"

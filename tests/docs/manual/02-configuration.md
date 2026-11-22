@@ -13,3 +13,4 @@ You must define the docs root.
 ## Templates
 
 You can override the base template.
+{: .docs-note }

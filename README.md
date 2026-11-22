@@ -14,7 +14,7 @@ no models — pages are read from disk and rendered on request.
 
 ## Features
 
-- Renders Markdown files (`fenced_code`, `tables`, `toc`, `sane_lists`).
+- Renders Markdown files (`fenced_code`, `tables`, `toc`, `sane_lists`, `attr_list`).
 - Auto-generated sidebar navigation grouped by folder — or hand-written via a `menu.md` file.
 - Automatic per-page table of contents built from each page's headings.
 - Case-insensitive, traversal-safe URL resolution.

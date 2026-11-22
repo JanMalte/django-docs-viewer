@@ -1,3 +1,4 @@
+import tempfile
 from pathlib import Path
 from unittest import mock
 
@@ -6,7 +7,7 @@ from django.test import SimpleTestCase, override_settings
 from django.urls import reverse
 from django.utils import translation
 
-from docs_viewer.pages import landing_relative_path
+from docs_viewer.pages import landing_relative_path, page_heading
 from docs_viewer.paths import (
     is_image_request,
     resolve_within_docs,
@@ -27,6 +28,18 @@ class DocsPathHelperTests(SimpleTestCase):
     def test_image_request_detection_uses_suffix_only(self):
         self.assertTrue(is_image_request("manual/images/status-legend.png"))
         self.assertFalse(is_image_request("manual/01-getting-started"))
+
+    def test_page_heading_strips_attribute_list(self):
+        headings = {
+            "# Getting Started {#start}": "Getting Started",
+            "# Getting Started {: #start .lead }": "Getting Started",
+            "# Getting Started": "Getting Started",
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            page = Path(directory) / "page.md"
+            for markdown_heading, expected in headings.items():
+                page.write_text(f"{markdown_heading}\n\nBody.\n", encoding="utf-8")
+                self.assertEqual(page_heading(page), expected)
 
     def test_resolve_within_docs_blocks_traversal(self):
         with self.assertRaisesMessage(Http404, "Path outside documentation directory"):
@@ -127,6 +140,10 @@ class DocsViewTests(SimpleTestCase):
         self.assertContains(response, 'class="toc"')
         self.assertContains(response, 'href="#settings"')
         self.assertContains(response, 'href="#templates"')
+
+    def test_attr_list_adds_attributes(self):
+        response = self.client.get(reverse("docs:detail", kwargs={"doc_path": "manual/02-configuration"}))
+        self.assertContains(response, '<p class="docs-note">You can override the base template.</p>', html=True)
 
     def test_toc_excludes_page_h1_by_default(self):
         response = self.client.get(reverse("docs:detail", kwargs={"doc_path": "manual/02-configuration"}))

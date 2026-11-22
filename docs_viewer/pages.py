@@ -7,14 +7,14 @@ import markdown
 from .conf import default_title, skip_dirs, toc_depth
 from .paths import docs_root
 
-MARKDOWN_EXTENSIONS = ["fenced_code", "tables", "toc", "sane_lists"]
+MARKDOWN_EXTENSIONS = ["fenced_code", "tables", "toc", "sane_lists", "attr_list"]
 
 MENU_FILE = "menu.md"
 # Matched case-insensitively for the docs-root landing page; also lead each folder's navigation
 # group, ahead of the ordered pages. Kept lowercase and ordered by preference.
 INDEX_FILENAMES = ["index.md", "readme.md"]
 
-_HEADING_PATTERN = re.compile(r"^\s*#\s+(.+?)\s*$", re.MULTILINE)
+_HEADING_PATTERN = re.compile(r"^\s*#\s+(.+?)(?:\s*\{:?[^}\n]*\})?\s*$", re.MULTILINE)
 
 
 def is_hidden(relative_path):

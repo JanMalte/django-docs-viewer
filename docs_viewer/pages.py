@@ -5,10 +5,8 @@ from pathlib import Path
 import markdown
 from markdown.extensions.toc import slugify_unicode
 
-from .conf import default_title, skip_dirs, toc_depth
+from .conf import default_title, markdown_extensions, skip_dirs, toc_depth
 from .paths import docs_root
-
-MARKDOWN_EXTENSIONS = ["fenced_code", "tables", "toc", "sane_lists", "attr_list"]
 
 MENU_FILE = "menu.md"
 # Matched case-insensitively for the docs-root landing page; also lead each folder's navigation
@@ -26,7 +24,7 @@ def is_hidden(relative_path):
 
 def _converter():
     return markdown.Markdown(
-        extensions=MARKDOWN_EXTENSIONS,
+        extensions=markdown_extensions(),
         extension_configs={"toc": {"toc_depth": toc_depth(), "slugify": slugify_unicode}},
     )
 
@@ -40,7 +38,7 @@ def render_page(page):
     """Render a page to (content_html, toc_html); toc_html is empty when the page has no sub-headings."""
     converter = _converter()
     content_html = converter.convert(page.read_text(encoding="utf-8"))
-    toc_html = converter.toc if converter.toc_tokens else ""
+    toc_html = converter.toc if getattr(converter, "toc_tokens", None) else ""
     return content_html, toc_html
 
 

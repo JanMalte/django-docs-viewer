@@ -6,6 +6,7 @@ from django.http import Http404
 from django.test import SimpleTestCase, override_settings
 from django.urls import reverse
 from django.utils import translation
+from markdown.extensions.fenced_code import FencedCodeExtension
 
 from docs_viewer.pages import landing_relative_path, page_heading
 from docs_viewer.paths import (
@@ -162,6 +163,23 @@ class DocsViewTests(SimpleTestCase):
         with override_settings(DOCS_VIEWER_TOC_DEPTH="1-3"):
             response = self.client.get(reverse("docs:detail", kwargs={"doc_path": "manual/02-configuration"}))
             self.assertContains(response, 'href="#configuration"')
+
+    def test_markdown_extensions_setting_replaces_defaults(self):
+        with override_settings(DOCS_VIEWER_MARKDOWN_EXTENSIONS=["toc"]):
+            response = self.client.get(reverse("docs:detail", kwargs={"doc_path": "manual/02-configuration"}))
+            self.assertContains(response, 'class="docs-toc"')
+            self.assertContains(response, "{: .docs-note }")
+
+    def test_page_renders_without_toc_extension(self):
+        with override_settings(DOCS_VIEWER_MARKDOWN_EXTENSIONS=["tables"]):
+            response = self.client.get(reverse("docs:detail", kwargs={"doc_path": "manual/02-configuration"}))
+            self.assertEqual(response.status_code, 200)
+            self.assertNotContains(response, 'class="docs-toc"')
+
+    def test_markdown_extensions_setting_accepts_extension_instances(self):
+        with override_settings(DOCS_VIEWER_MARKDOWN_EXTENSIONS=[FencedCodeExtension(lang_prefix="lang-"), "toc"]):
+            response = self.client.get(reverse("docs:detail", kwargs={"doc_path": "manual/01-getting-started"}))
+            self.assertContains(response, '<code class="lang-python">')
 
     def test_underscore_dirs_are_hidden_by_default(self):
         response = self.client.get(reverse("docs:home"))

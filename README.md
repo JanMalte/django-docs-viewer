@@ -14,7 +14,7 @@ no models — pages are read from disk and rendered on request.
 
 ## Features
 
-- Renders Markdown files (`fenced_code`, `tables`, `toc`, `sane_lists`, `attr_list`).
+- Renders Markdown files (`fenced_code`, `tables`, `toc`, `sane_lists`, `attr_list` by default; configurable).
 - Auto-generated sidebar navigation grouped by folder — or hand-written via a `menu.md` file.
 - Automatic per-page table of contents built from each page's headings.
 - Case-insensitive, traversal-safe URL resolution.
@@ -129,10 +129,36 @@ ahead of `2-…`.
 | `DOCS_VIEWER_TITLE`          | `"Documentation"`         | Fallback page title when no index heading is available.  |
 | `DOCS_VIEWER_TOC_DEPTH`      | `"2-3"`                   | Heading levels included in the per-page table of contents. |
 | `DOCS_VIEWER_SKIP_DIRS`      | `["_*"]`                  | Glob patterns; directories matching any are hidden (excluded from navigation and not served). A custom value replaces the default, so include `"_*"` if you still want underscore-prefixed directories hidden. |
+| `DOCS_VIEWER_MARKDOWN_EXTENSIONS` | `["fenced_code", "tables", "toc", "sane_lists", "attr_list"]` | [Python-Markdown extensions](https://python-markdown.github.io/extensions/) used to render pages: names or `Extension` instances (e.g. `CodeHiliteExtension(linenums=True)`). A custom value replaces the default; keep `"toc"` for the per-page table of contents. |
 
 The page title is taken from the first level-1 heading of the index
 (`index.md` or `README.md`) at the docs root, falling back to
 `DOCS_VIEWER_TITLE`.
+
+## Markdown extensions
+
+`DOCS_VIEWER_MARKDOWN_EXTENSIONS` replaces the default list. To add extensions
+while keeping the defaults, extend `DEFAULT_MARKDOWN_EXTENSIONS`:
+
+```python
+from docs_viewer.conf import DEFAULT_MARKDOWN_EXTENSIONS
+from pymdownx.tasklist import TaskListExtension
+
+DOCS_VIEWER_MARKDOWN_EXTENSIONS = [
+    *DEFAULT_MARKDOWN_EXTENSIONS,
+    "pymdownx.tasklist",  # by name, with default options
+    # TaskListExtension(custom_checkbox=True),  # or as an instance, with options
+]
+```
+
+To swap or drop a default, list the extensions explicitly instead, e.g. replace
+`fenced_code` with `pymdownx.superfences`:
+
+```python
+DOCS_VIEWER_MARKDOWN_EXTENSIONS = ["pymdownx.superfences", "tables", "toc", "sane_lists", "attr_list"]
+```
+
+Keep `toc` in the list for the per-page table of contents and heading anchors.
 
 ## Customizing the template
 

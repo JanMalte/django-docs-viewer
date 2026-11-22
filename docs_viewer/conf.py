@@ -5,6 +5,7 @@ DEFAULT_TITLE = _("Documentation")
 DEFAULT_BASE_TEMPLATE = "docs_viewer/base.html"
 DEFAULT_TOC_DEPTH = "2-3"
 DEFAULT_SKIP_DIRS = ["_*"]
+DEFAULT_MARKDOWN_EXTENSIONS = ["fenced_code", "tables", "toc", "sane_lists", "attr_list"]
 
 
 def login_required():
@@ -26,3 +27,7 @@ def toc_depth():
 def skip_dirs():
     """Glob patterns; a page is hidden when any directory in its path matches one."""
     return getattr(settings, "DOCS_VIEWER_SKIP_DIRS", DEFAULT_SKIP_DIRS)
+
+
+def markdown_extensions():
+    return getattr(settings, "DOCS_VIEWER_MARKDOWN_EXTENSIONS", DEFAULT_MARKDOWN_EXTENSIONS)
